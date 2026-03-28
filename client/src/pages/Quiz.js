@@ -9,10 +9,10 @@ function Quiz() {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-  axios.get(`${process.env.REACT_APP_API_URL}/quiz`)
-    .then(res => setQuestions(res.data))
-    .catch(err => console.log(err));
-}, []);
+    axios.get(`${process.env.REACT_APP_API_URL}/quiz`)
+      .then(res => setQuestions(res.data))
+      .catch(err => console.log(err));
+  }, []);
 
   const handleAnswer = (option) => {
     const correctAnswer = questions[current].answer;
@@ -30,8 +30,9 @@ function Quiz() {
       setScore(prev => prev + 10);
 
       // 🔥 UPDATE POINTS WITH JWT
+      // 🔥 UPDATE POINTS WITH JWT
       axios.post(
-        "axios.get(`${process.env.REACT_APP_API_URL}/quiz`)",
+        `${process.env.REACT_APP_API_URL}/updatePoints`,
         { points: 10 },
         {
           headers: {
