@@ -287,4 +287,7 @@ app.get("/leaderboard", async (req, res) => {
 // ======================
 // 🚀 START SERVER
 // ======================
+app.get("/", (req, res) => {
+  res.send("Backend Running 🚀");
+});
 app.listen(3001, () => console.log("Server running 🚀"));
