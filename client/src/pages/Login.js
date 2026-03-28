@@ -15,7 +15,7 @@ function Login() {
       return;
     }
 
-    axios.post("https://quiz-backend-5ik4.onrender.com/login", {
+    axios.post(`${process.env.REACT_APP_API_URL}/login`, {
       email,
       password
     })
