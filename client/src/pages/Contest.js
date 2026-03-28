@@ -25,7 +25,7 @@ function Contest() {
     setLoadingId(contestId);
 
     axios.post(
-      "http://localhost:3001/joinContest",
+      "https://quiz-backend-5ik4.onrender.com/joinContest",
       { entryFee: entry },
       {
         headers: {

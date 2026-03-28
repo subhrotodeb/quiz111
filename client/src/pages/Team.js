@@ -73,7 +73,7 @@ function Team() {
     setLoading(true);
 
     axios.post(
-      "http://localhost:3001/saveTeam",
+      "https://quiz-backend-5ik4.onrender.com/saveTeam",
       {
         team,
         captain,

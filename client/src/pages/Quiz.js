@@ -9,7 +9,7 @@ function Quiz() {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    axios.get("http://localhost:3001/quiz")
+    axios.get("https://quiz-backend-5ik4.onrender.com/quiz")
       .then(res => setQuestions(res.data))
       .catch(err => console.log(err));
   }, []);
@@ -31,7 +31,7 @@ function Quiz() {
 
       // 🔥 UPDATE POINTS WITH JWT
       axios.post(
-        "http://localhost:3001/updatePoints",
+        "https://quiz-backend-5ik4.onrender.com/updatePoints",
         { points: 10 },
         {
           headers: {

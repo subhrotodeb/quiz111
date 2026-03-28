@@ -21,7 +21,7 @@ function Signup() {
       return;
     }
 
-    axios.post("http://127.0.0.1:3001/signup", {
+    axios.post("https://quiz-backend-5ik4.onrender.com/signup", {
       name,
       email,
       password
