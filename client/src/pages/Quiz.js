@@ -9,7 +9,7 @@ function Quiz() {
   const [score, setScore] = useState(0);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:3001/quiz")
+    axios.get("http://localhost:3001/quiz")
       .then(res => setQuestions(res.data))
       .catch(err => console.log(err));
   }, []);
@@ -17,13 +17,41 @@ function Quiz() {
   const handleAnswer = (option) => {
     const correctAnswer = questions[current].answer;
 
-    let points = Number(localStorage.getItem("points")) || 0;
+    const user = JSON.parse(localStorage.getItem("user"));
+    const token = localStorage.getItem("token");
+
+    if (!user || !token) {
+      alert("Please login again");
+      return;
+    }
 
     if (option === correctAnswer) {
       setFeedback("correct");
-
-      localStorage.setItem("points", points + 10);
       setScore(prev => prev + 10);
+
+      // 🔥 UPDATE POINTS WITH JWT
+      axios.post(
+        "http://localhost:3001/updatePoints",
+        { points: 10 },
+        {
+          headers: {
+            Authorization: token
+          }
+        }
+      )
+        .then(res => {
+          console.log("Points updated:", res.data);
+
+          // 🔥 UPDATE LOCAL USER
+          const updatedUser = {
+            ...user,
+            points: res.data.points
+          };
+
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+        })
+        .catch(err => console.log(err));
+
     } else {
       setFeedback("wrong");
     }
@@ -36,20 +64,37 @@ function Quiz() {
 
   // ✅ END SCREEN
   if (current >= questions.length) {
+    const finalUser = JSON.parse(localStorage.getItem("user"));
+
     return (
       <>
         <Navbar />
         <div className="text-center mt-20 text-2xl">
           🎉 Quiz Completed!
+
           <p className="mt-4 text-green-400">
             Your Score: {score}
+          </p>
+
+          <p className="mt-2 text-blue-400">
+            Total Points: {finalUser?.points || 0}
           </p>
         </div>
       </>
     );
   }
 
-  // ✅ CURRENT QUESTION ONLY
+  if (questions.length === 0) {
+    return (
+      <>
+        <Navbar />
+        <div className="text-center mt-20 text-xl">
+          Loading Quiz... ⏳
+        </div>
+      </>
+    );
+  }
+
   const q = questions[current];
 
   return (
@@ -61,7 +106,7 @@ function Quiz() {
           Quiz 🎯
         </h1>
 
-        {q && (
+        {q?.question && (
           <div className="bg-[#1E293B] p-6 rounded-xl">
 
             <h2 className="mb-4 text-lg">
@@ -72,8 +117,8 @@ function Quiz() {
             {q.options.map((opt, idx) => (
               <button
                 key={idx}
-                onClick={() => handleAnswer(opt)}   // ✅ FIXED
-                disabled={feedback !== ""}          // ✅ prevent multiple clicks
+                onClick={() => handleAnswer(opt)}
+                disabled={feedback !== ""}
                 className="block w-full text-left bg-[#0f172a] p-3 mt-2 rounded hover:bg-[#334155]"
               >
                 {opt}

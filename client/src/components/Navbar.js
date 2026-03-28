@@ -5,7 +5,10 @@ function Navbar() {
   const navigate = useNavigate();
   return (
     <div className="flex justify-between items-center px-4 py-4 bg-[#1E293B] shadow-lg">
-      <h1 className="text-2xl font-bold text-[#6C5CE7]">QuizLeague</h1>
+      <h1 className="text-2xl font-extrabold">
+          <span className="text-[#00CEC9]">Quiz</span>
+          <span className="text-orange-500">League</span>
+        </h1>
 
       <div className="flex gap-4">
         <button

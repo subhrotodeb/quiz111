@@ -1,26 +1,65 @@
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useState } from "react";
 
 function Contest() {
   const navigate = useNavigate();
+  const [loadingId, setLoadingId] = useState(null);
 
   const contests = [
     { id: 1, name: "Mega Contest", entry: 10, prize: 100 },
     { id: 2, name: "Head to Head", entry: 5, prize: 50 }
   ];
 
-  const joinContest = (entry) => {
-    const points = Number(localStorage.getItem("points")) || 0;
+  const joinContest = (contestId, entry) => {
+    const token = localStorage.getItem("token");
 
-    if (points < entry) {
-      alert("Not enough points! Earn from Quiz 🎯");
+    console.log("TOKEN:", token);
+
+    if (!token) {
+      alert("Please login first");
       return;
     }
 
-    localStorage.setItem("points", points - entry);
+    setLoadingId(contestId);
 
-    alert("Joined contest successfully 🚀");
-    navigate("/team");
+    axios.post(
+      "http://localhost:3001/joinContest",
+      { entryFee: entry },
+      {
+        headers: {
+          Authorization: token
+        }
+      }
+    )
+      .then(res => {
+        console.log("RESPONSE:", res.data);
+
+        if (res.data.success) {
+          alert("Joined contest successfully 🚀");
+
+          const user = JSON.parse(localStorage.getItem("user"));
+
+          const updatedUser = {
+            ...user,
+            points: res.data.points
+          };
+
+          localStorage.setItem("user", JSON.stringify(updatedUser));
+
+          navigate("/team");
+        } else {
+          alert(res.data.message || "Failed to join contest");
+        }
+      })
+      .catch(err => {
+        console.log("ERROR:", err);
+        alert("Something went wrong ❌");
+      })
+      .finally(() => {
+        setLoadingId(null);
+      });
   };
 
   return (
@@ -40,8 +79,11 @@ function Contest() {
             <p>Prize: {c.prize} pts</p>
 
             <button
-              onClick={() => joinContest(c.entry)}
-              className="mt-3 bg-[#00CEC9] px-4 py-2 rounded text-black transform transition duration-200 hover:scale-105 hover:bg-[#00b5b1] hover:shadow-md"
+              onClick={() => {
+                console.log("CLICKED:", c.id);   // 🔥 DEBUG
+                joinContest(c.id, c.entry);
+              }}
+              className="mt-3 bg-[#00CEC9] px-4 py-2 rounded text-black hover:scale-105"
             >
               Join
             </button>
