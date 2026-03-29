@@ -1,7 +1,6 @@
 import { useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 
 function Team() {
   const navigate = useNavigate();
@@ -44,7 +43,7 @@ function Team() {
   };
 
   // ======================
-  // 🔥 SUBMIT TEAM (BACKEND CONNECTED)
+  // 🔥 SUBMIT TEAM (LOCAL ONLY)
   // ======================
   const submitTeam = () => {
     const token = localStorage.getItem("token");
@@ -52,6 +51,11 @@ function Team() {
     if (!token) {
       alert("Login required");
       navigate("/login");
+      return;
+    }
+
+    if (!selectedMatch) {
+      alert("Please select a match");
       return;
     }
 
@@ -70,35 +74,20 @@ function Team() {
       return;
     }
 
-    setLoading(true);
+    // ✅ SAVE LOCALLY
+    const savedTeam = {
+      team,
+      captain,
+      viceCaptain,
+      match: `${selectedMatch.teamA} vs ${selectedMatch.teamB}`
+    };
 
-    axios.post(
-      "https://quiz-backend-5ik4.onrender.com/saveTeam",
-      {
-        team,
-        captain,
-        viceCaptain,
-        match: selectedMatch
-      },
-      {
-        headers: {
-          Authorization: token
-        }
-      }
-    )
-    .then(res => {
-      if (res.data.success) {
-        alert("Team Created 🚀");
-        navigate("/leaderboard");
-      } else {
-        alert("Failed to save team");
-      }
-    })
-    .catch(err => {
-      console.log(err);
-      alert("Error saving team");
-    })
-    .finally(() => setLoading(false));
+    localStorage.setItem("myTeam", JSON.stringify(savedTeam));
+
+    alert("Team saved successfully 🚀");
+
+    // ✅ REDIRECT
+    navigate("/leaderboard");
   };
 
   return (
@@ -202,7 +191,7 @@ function Team() {
               disabled={loading}
               className="mt-6 bg-green-500 px-6 py-2 rounded hover:scale-105"
             >
-              {loading ? "Submitting..." : "Submit Team 🚀"}
+              Submit Team 🚀
             </button>
           </>
         )}
